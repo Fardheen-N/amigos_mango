@@ -34,20 +34,27 @@ public class AmigosMangoApplication {
 					BigDecimal.TEN,
 					LocalDateTime.now()
 			);
-			Query query = new Query();
-			query.addCriteria(Criteria.where("email").is(email));
-			List<Student> students=mongoTemplate.find(query,Student.class);
-			if(students.size()>1){
-				throw new IllegalStateException("Found many student with email"+email);
-			}
-			if(students.isEmpty()){
-				System.out.println("Inserting Student :\n"+student);
-				studentRepo.insert(student);
-			}else {
+			//usingMongoTemplate(studentRepo, mongoTemplate, email, student);
+			studentRepo.findStudentByEmail(email).ifPresentOrElse(s -> {
 				System.out.println(student + "\nAlready exist");
-			}
+			},()->{System.out.println("Inserting Student :\n"+ student);
+				studentRepo.insert(student);});
 		};
 
+	}
+	private static void usingMongoTemplate(StudentRepo studentRepo, MongoTemplate mongoTemplate, String email, Student student) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("email").is(email));
+		List<Student> students= mongoTemplate.find(query,Student.class);
+		if(students.size()>1){
+			throw new IllegalStateException("Found many student with email"+ email);
+		}
+		if(students.isEmpty()){
+			System.out.println("Inserting Student :\n"+ student);
+			studentRepo.insert(student);
+		}else {
+			System.out.println(student + "\nAlready exist");
+		}
 	}
 
 }
