@@ -36,7 +36,7 @@ public class AmigosMangoApplication {
 			);
 			//usingMongoTemplate(studentRepo, mongoTemplate, email, student);
 			studentRepo.findStudentByEmail(email).ifPresentOrElse(s -> {
-				System.out.println(student + "\nAlready exist");
+				System.out.println(s + "\nAlready exist");
 			},()->{System.out.println("Inserting Student :\n"+ student);
 				studentRepo.insert(student);});
 		};
